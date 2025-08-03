@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279048385472",
+    "project_id": "filmes-do-dia",
+    "storage_bucket": "filmes-do-dia.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279048385472:android:7d4bd41caa0682324dce25",
+        "android_client_info": {
+          "package_name": "com.fenixgs.filmedodia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh25nchSPaIj2QEshm9DxPLq51FrpMUdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
