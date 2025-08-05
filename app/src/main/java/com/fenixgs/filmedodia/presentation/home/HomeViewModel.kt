@@ -2,25 +2,34 @@ package com.fenixgs.filmedodia.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fenixgs.filmedodia.data.api.dto.MovieOMDbResponse
-import com.fenixgs.filmedodia.domain.usecase.GetMovieByTitleUseCase
+import com.fenixgs.filmedodia.data.api.dto.MovieDTO
+import com.fenixgs.filmedodia.data.repository.MovieRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val getMovieByTitleUseCase: GetMovieByTitleUseCase) : ViewModel() {
+class HomeViewModel(
+    private val repository: MovieRepository
+) : ViewModel() {
 
-    private val _movie = MutableStateFlow<MovieOMDbResponse?>(null)
-    val movie: StateFlow<MovieOMDbResponse?> = _movie
+    private val _movies = MutableStateFlow<List<MovieDTO>>(emptyList())
+    val movies: StateFlow<List<MovieDTO>> = _movies
 
-    fun loadMovie(title: String, apiKey: String) {
+    private val apiKey = "f99c0b2933f2922adb57394f5a38f05e"
+
+    fun loadUnwatchedDramaMovies() {
         viewModelScope.launch {
-            try {
-                val result = getMovieByTitleUseCase(title, apiKey)
-                _movie.value = result
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            val allMovies = repository.getDramaMovies(apiKey)
+            val watchedTitles = repository.getWatchedMovies()
+            val unwatched = allMovies.filterNot { it.title in watchedTitles }
+            _movies.value = unwatched.take(5)
+        }
+    }
+
+    fun markMovieAsWatched(title: String) {
+        viewModelScope.launch {
+            repository.saveWatchedMovie(title)
+            loadUnwatchedDramaMovies()
         }
     }
 }

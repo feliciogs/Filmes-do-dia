@@ -1,9 +1,9 @@
 package com.fenixgs.filmedodia.util.mappers
 
-import com.fenixgs.filmedodia.data.api.dto.MovieDto
+import com.fenixgs.filmedodia.data.api.dto.MovieDTO
 import com.fenixgs.filmedodia.domain.model.Movie
 
-fun MovieDto.toDomain(): Movie {
+fun MovieDTO.toDomain(): Movie {
     return Movie(
         id = id,
         title = title,

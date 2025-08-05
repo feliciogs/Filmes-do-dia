@@ -5,22 +5,17 @@ import com.fenixgs.filmedodia.data.repository.MovieRepository
 import com.fenixgs.filmedodia.domain.usecase.GetMovieByTitleUseCase
 import com.fenixgs.filmedodia.presentation.home.HomeViewModel
 import com.fenixgs.filmedodia.presentation.login.LoginViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 val appModule = module {
+    single { FirebaseAuth.getInstance() }
 
-    single {
-        Retrofit.Builder()
-            .baseUrl("https://www.omdbapi.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(OMDbApi::class.java)
-    }
+    single { FirebaseFirestore.getInstance() }
 
-    single { MovieRepository(get()) }
+    single { MovieRepository(get(), get()) }
 
     single { GetMovieByTitleUseCase(get()) }
 

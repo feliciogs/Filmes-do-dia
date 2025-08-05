@@ -5,5 +5,5 @@ data class Movie(
     val title: String,
     val description: String,
     val posterUrl: String?,
-    val rating: Float
+    val rating: Double
 )

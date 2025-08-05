@@ -1,50 +1,67 @@
 package com.fenixgs.filmedodia.presentation.home
 
-import androidx.compose.runtime.*
-import androidx.compose.material.*
+import MovieCard
+import MovieDialog
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
+import com.fenixgs.filmedodia.data.api.dto.MovieDTO
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinViewModel()) {
-    val movieState by viewModel.movie.collectAsState()
-    var title by remember { mutableStateOf("") }
+    val movies by viewModel.movies.collectAsState()
+    var selectedMovie by remember { mutableStateOf<MovieDTO?>(null) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Filme") }
+    LaunchedEffect(Unit) {
+        viewModel.loadUnwatchedDramaMovies()
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Filmes de Drama para hoje",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Button(onClick = {
-            val apiKey = "179904c7"
-            viewModel.loadMovie(title, apiKey)
-        }) {
-            Text("Buscar Filme")
+        if (movies.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(movies) { movie ->
+                    MovieCard(movie = movie) {
+                        selectedMovie = movie
+                    }
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        movieState?.let { movie ->
-            Text("Título: ${movie.title}")
-            Text("Nota IMDb: ${movie.imdbRating}")
-            Text("Gênero: ${movie.genre}")
-            AsyncImage(
-                model = movie.poster,
-                contentDescription = null,
-                modifier = Modifier.height(300.dp)
+        selectedMovie?.let { movie ->
+            MovieDialog(
+                movie = movie,
+                onDismiss = { selectedMovie = null },
+                onMarkAsWatched = {
+                    viewModel.markMovieAsWatched(movie.title)
+                    selectedMovie = null
+                }
             )
         }
     }
 }
+
+
+
