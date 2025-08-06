@@ -14,6 +14,7 @@ import com.fenixgs.filmedodia.presentation.home.HomeScreen
 import com.fenixgs.filmedodia.presentation.login.LoginScreen
 import com.fenixgs.filmedodia.presentation.navigation.MainScreen
 import com.fenixgs.filmedodia.presentation.profile.ProfileScreen
+import com.fenixgs.filmedodia.presentation.register.RegisterScreen
 import com.fenixgs.filmedodia.ui.theme.FilmeDoDiaTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -37,6 +38,9 @@ fun AppNavigation(rootNavController: NavHostController) {
     NavHost(navController = rootNavController, startDestination = startDestination) {
         composable("login") {
             LoginScreen(rootNavController)
+        }
+        composable("register") {
+            RegisterScreen(rootNavController)
         }
         composable("main") {
             MainScreen(rootNavController)

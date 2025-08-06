@@ -1,4 +1,4 @@
-package com.fenixgs.filmedodia.presentation.login
+package com.fenixgs.filmedodia.presentation.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -22,20 +21,13 @@ import com.fenixgs.filmedodia.R
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    val viewModel = getViewModel<LoginViewModel>()
-    val loginState by viewModel.loginState.collectAsState()
+fun RegisterScreen(navController: NavController) {
+    val viewModel = getViewModel<RegisterViewModel>()
+    val registerState by viewModel.registerState.collectAsState()
 
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    LaunchedEffect(loginState) {
-        if (loginState is LoginState.Success) {
-            navController.navigate("main") {
-                popUpTo("login") { inclusive = true }
-            }
-        }
-    }
 
     val gradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF0D47A1), Color(0xFF42A5F5))
@@ -55,7 +47,7 @@ fun LoginScreen(navController: NavController) {
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.ic_app_logo),
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .size(100.dp)
@@ -63,12 +55,23 @@ fun LoginScreen(navController: NavController) {
             )
 
             Text(
-                text = "Bem-vindo de volta!",
+                text = "Criar conta",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nome") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = outlinedFieldColors()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = email,
@@ -77,15 +80,7 @@ fun LoginScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White.copy(alpha = 0.7f),
-                    cursorColor = Color.White
-                )
+                colors = outlinedFieldColors()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -98,62 +93,63 @@ fun LoginScreen(navController: NavController) {
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White.copy(alpha = 0.7f),
-                    cursorColor = Color.White
-                )
+                colors = outlinedFieldColors()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.login(email, password) },
+                onClick = {
+                    viewModel.register(name, email, password)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Entrar")
+                Text("Registrar")
             }
 
-            when (val state = loginState) {
-                is LoginState.Error -> {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "Erro: ${state.message}",
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                LoginState.Loading -> {
-                    Spacer(modifier = Modifier.height(12.dp))
+            when (val state = registerState) {
+                is RegisterState.Loading -> {
+                    Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-                else -> {}
+                is RegisterState.Error -> {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = state.message, color = MaterialTheme.colorScheme.error)
+                }
+                is RegisterState.Success -> {
+                    LaunchedEffect(Unit) {
+                        navController.navigate("main") {
+                            popUpTo("register") { inclusive = true }
+                        }
+                        viewModel.resetState()
+                    }
+                }
+                else -> Unit
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Criar conta",
+                text = "Já tem uma conta? Fazer login",
                 color = Color.White,
-                modifier = Modifier.clickable {
-                    navController.navigate("register")
-                }
-            )
-
-            Text(
-                text = "Esqueceu a senha?",
-                color = Color.White.copy(alpha = 0.8f),
                 fontSize = 14.sp,
                 modifier = Modifier
                     .clickable {
-                        // TODO: Navegar para recuperação de senha
+                        navController.popBackStack()
                     }
                     .padding(4.dp)
             )
         }
     }
 }
+
+@Composable
+private fun outlinedFieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color.White,
+    focusedBorderColor = Color.White,
+    unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+    focusedLabelColor = Color.White,
+    unfocusedLabelColor = Color.White.copy(alpha = 0.7f),
+    cursorColor = Color.White
+)
