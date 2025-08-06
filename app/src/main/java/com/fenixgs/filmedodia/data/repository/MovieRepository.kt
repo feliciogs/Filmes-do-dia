@@ -16,7 +16,7 @@ class MovieRepository(
     suspend fun getDramaMovies(apiKey: String): List<MovieDTO> {
         val response = RetrofitInstance.api.getMoviesByGenre(
             apiKey = apiKey,
-            genreId = 28
+            genreId = 18
         )
         return response.results
     }

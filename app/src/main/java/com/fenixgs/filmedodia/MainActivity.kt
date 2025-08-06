@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fenixgs.filmedodia.presentation.home.HomeScreen
 import com.fenixgs.filmedodia.presentation.login.LoginScreen
+import com.fenixgs.filmedodia.presentation.navigation.MainScreen
+import com.fenixgs.filmedodia.presentation.profile.ProfileScreen
 import com.fenixgs.filmedodia.ui.theme.FilmeDoDiaTheme
 import com.google.firebase.auth.FirebaseAuth
 
@@ -20,22 +22,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FilmeDoDiaTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    AppNavigation()
-                }
+                val navController = rememberNavController()
+                AppNavigation(navController)
             }
         }
     }
 }
 
 @Composable
-fun AppNavigation() {
-    val navController: NavHostController = rememberNavController()
+fun AppNavigation(rootNavController: NavHostController) {
     val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
-    val startDestination = if (isLoggedIn) "home" else "login"
+    val startDestination = if (isLoggedIn) "main" else "login"
 
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable("login") { LoginScreen(navController) }
-        composable("home") { HomeScreen(navController) }
+    NavHost(navController = rootNavController, startDestination = startDestination) {
+        composable("login") {
+            LoginScreen(rootNavController)
+        }
+        composable("main") {
+            MainScreen(rootNavController)
+        }
     }
 }
+
+
+
+
