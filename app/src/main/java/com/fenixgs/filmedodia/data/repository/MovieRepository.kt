@@ -22,6 +22,14 @@ class MovieRepository(
         return response.results
     }
 
+    suspend fun getMoviesByGenre(apiKey: String,genre:Int): List<MovieDTO> {
+        val response = RetrofitInstance.api.getMoviesByGenre(
+            apiKey = apiKey,
+            genreId = genre
+        )
+        return response.results
+    }
+
     suspend fun getWatchedMovies(): List<String> {
         val uid = userId ?: return emptyList()
         val snapshot = firestore.collection("users")
