@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitInstance {
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY // Mostra cabeçalhos, corpo, etc.
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
     private val client = OkHttpClient.Builder()
@@ -18,7 +18,7 @@ object RetrofitInstance {
     val api: TMDBApi by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.themoviedb.org/3/")
-            .client(client)  // Aqui
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(TMDBApi::class.java)

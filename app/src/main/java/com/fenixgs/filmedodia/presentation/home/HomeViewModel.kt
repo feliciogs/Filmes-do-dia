@@ -26,9 +26,9 @@ class HomeViewModel(
         }
     }
 
-    fun markMovieAsWatched(title: String) {
+    fun markMovieAsWatched(title: MovieDTO) {
         viewModelScope.launch {
-            repository.saveWatchedMovie(title)
+            repository.saveWatchedMovie(title.title,title.poster_path?: "")
             loadUnwatchedDramaMovies()
         }
     }

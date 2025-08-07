@@ -65,7 +65,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
                 movie = movie,
                 onDismiss = { selectedMovie = null },
                 onMarkAsWatched = {
-                    viewModel.markMovieAsWatched(movie.title)
+                    viewModel.markMovieAsWatched(movie)
                     selectedMovie = null
                 }
             )

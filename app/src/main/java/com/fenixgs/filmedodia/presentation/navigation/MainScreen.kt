@@ -7,13 +7,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fenixgs.filmedodia.presentation.home.HomeScreen
 import com.fenixgs.filmedodia.presentation.profile.ProfileScreen
+import com.fenixgs.filmedodia.presentation.profile.WatchedMoviesScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -68,8 +68,10 @@ fun MainScreen(rootNavController: NavHostController) {
                 composable(BottomNavItem.Profile.route) {
                     ProfileScreen(navController)
                 }
+                composable("watchedMovies") {
+                    WatchedMoviesScreen(navController)
+                }
             }
         }
     }
 }
-

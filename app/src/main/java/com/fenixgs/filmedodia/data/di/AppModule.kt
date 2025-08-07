@@ -1,7 +1,6 @@
 package com.fenixgs.filmedodia.data.di
 
 import com.fenixgs.filmedodia.data.repository.MovieRepository
-import com.fenixgs.filmedodia.domain.usecase.GetMovieByTitleUseCase
 import com.fenixgs.filmedodia.presentation.home.HomeViewModel
 import com.fenixgs.filmedodia.presentation.login.LoginViewModel
 import com.fenixgs.filmedodia.presentation.profile.ProfileViewModel
@@ -18,10 +17,8 @@ val appModule = module {
 
     single { MovieRepository(get(), get()) }
 
-    single { GetMovieByTitleUseCase(get()) }
-
     viewModel { HomeViewModel(get()) }
     viewModel { LoginViewModel() }
     viewModel { RegisterViewModel() }
-    viewModel { ProfileViewModel() }
+    viewModel { ProfileViewModel(get()) }
 }
