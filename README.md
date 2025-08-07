@@ -29,24 +29,6 @@ Aplicativo Android desenvolvido em Kotlin utilizando Jetpack Compose e arquitetu
 
 ---
 
-## Estrutura do projeto
-
-com.fenixgs.filmedodia/
-├── data/ # Modelos, DTOs e repositórios
-│ ├── api/ # Definições Retrofit, DTOs de resposta
-│ ├── firebase/ # Classes para integração com Firestore
-│ └── repository/ # Implementação dos repositórios
-├── di/ # Módulos de injeção de dependência (se usar Hilt)
-├── ui/ # Composables e telas
-│ ├── components/ # Componentes de UI reutilizáveis
-│ ├── screens/ # Telas principais (home, perfil, assistidos)
-├── viewmodel/ # ViewModels com lógica de negócio e estado
-├── navigation/ # Controle da navegação (se usar Navigation Compose)
-└── utils/ # Funções utilitárias, extensões e helpers
-
-
----
-
 ## Configurações importantes
 
 - **API Key TMDB:** Configurar sua chave no arquivo `local.properties` ou diretamente no Retrofit  
