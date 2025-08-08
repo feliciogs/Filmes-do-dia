@@ -1,122 +1,161 @@
 package com.fenixgs.filmedodia.presentation.home
 
-import com.fenixgs.filmedodia.presentation.components.MovieCard
 import MovieDialog
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.fenixgs.filmedodia.data.api.dto.MovieDTO
 import com.fenixgs.filmedodia.domain.model.Genre
+import com.fenixgs.filmedodia.presentation.components.MovieCard
 import org.koin.androidx.compose.koinViewModel
 
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinViewModel()) {
-    val movies by viewModel.movies.collectAsState()
-    val genres by viewModel.genres.collectAsState()
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val genreMoviesMap by viewModel.genreMoviesMap.collectAsState()
+    val genres by viewModel.preferredGenres.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     var selectedMovie by remember { mutableStateOf<MovieDTO?>(null) }
     var selectedGenre by remember { mutableStateOf<Genre?>(null) }
 
-    LaunchedEffect(Unit) {
-        if (selectedGenre == null && genres.isNotEmpty()) {
-            selectedGenre = genres.first()
-        }
-    }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
-    LaunchedEffect(selectedGenre) {
-        selectedGenre?.let {
-            viewModel.loadUnwatchedMoviesByGenre(it.id)
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp)
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = { viewModel.refreshAllGenres() }
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = selectedGenre?.name ?: "Filmes",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Selecionamos os melhores filmes para você hoje",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                modifier = Modifier.padding(top = 4.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 16.dp),
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            items(genres) { genre ->
-                val isSelected = genre == selectedGenre
-                Text(
-                    text = genre.name,
+            item {
+                Column(
                     modifier = Modifier
-                        .clickable { selectedGenre = genre }
-                        .padding(vertical = 4.dp),
-                    style = if (isSelected)
-                        MaterialTheme.typography.titleMedium
-                    else
-                        MaterialTheme.typography.bodyMedium,
-                    color = if (isSelected)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onBackground
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (movies.isEmpty()) {
-            Box(
-                Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-            }
-        } else {
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                items(movies) { movie ->
-                    MovieCard(
-                        movie = movie,
-                        modifier = Modifier
-                            .width(180.dp)
-                            .padding(vertical = 8.dp),
-                        onClick = { selectedMovie = movie }
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Filmes do Dia",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    Text(
+                        text = "Selecionamos os melhores para você",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = { viewModel.refreshAllGenres() },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Atualizar sugestões")
+                    }
+                }
+            }
+
+            genres.forEach { genre ->
+                val movies = genreMoviesMap[genre].orEmpty()
+
+                if (movies.isNotEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = genre.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(movies) { movie ->
+                                    MovieCard(
+                                        movie = movie,
+                                        modifier = Modifier
+                                            .width(180.dp)
+                                            .padding(vertical = 8.dp),
+                                        onClick = {
+                                            selectedMovie = movie
+                                            selectedGenre = genre
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (isLoading && genreMoviesMap.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                    }
                 }
             }
         }
+    }
 
-        selectedMovie?.let { movie ->
+    selectedMovie?.let { movie ->
+        selectedGenre?.let { genre ->
             MovieDialog(
                 movie = movie,
                 onDismiss = { selectedMovie = null },
                 onMarkAsWatched = {
-                    viewModel.markMovieAsWatched(movie)
+                    viewModel.markMovieAsWatched(genre, movie)
                     selectedMovie = null
                 }
             )
         }
     }
 }
+
+
+
+

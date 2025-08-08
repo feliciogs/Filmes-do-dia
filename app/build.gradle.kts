@@ -87,6 +87,7 @@ dependencies {
     implementation("io.insert-koin:koin-android:3.5.3")
     implementation("io.insert-koin:koin-androidx-compose:3.5.3")
 
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.33.2-alpha")
 
 
 }

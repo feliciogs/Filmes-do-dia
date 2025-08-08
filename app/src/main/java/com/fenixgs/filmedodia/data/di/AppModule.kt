@@ -21,7 +21,7 @@ val appModule = module {
 
     single { UserPreferencesRepository(auth = get(), firestore = get()) }
 
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(),get()) }
     viewModel { LoginViewModel() }
     viewModel { RegisterViewModel() }
     viewModel { ProfileViewModel(get()) }
