@@ -25,7 +25,7 @@ fun MainScreen(rootNavController: NavHostController) {
     )
     var selectedTab by remember { mutableStateOf(0) }
 
-    val navController = rememberNavController() // NavController interno para home/profile
+    val navController = rememberNavController()
 
     Scaffold(
         bottomBar = {

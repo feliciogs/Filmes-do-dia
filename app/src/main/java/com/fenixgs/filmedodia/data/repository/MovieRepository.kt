@@ -2,9 +2,14 @@ package com.fenixgs.filmedodia.data.repository
 
 import com.fenixgs.filmedodia.data.api.RetrofitInstance
 import com.fenixgs.filmedodia.data.api.dto.MovieDTO
+import com.fenixgs.filmedodia.domain.model.Genre
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 class MovieRepository(
@@ -70,14 +75,20 @@ class MovieRepository(
                 id = 0,
                 title = doc.id,
                 poster_path = doc.getString("posterUrl"),
-                overview = "", // se quiser pode salvar também
+                overview = "",
                 vote_average = 10.0,
-                release_date = "" // ou deixar padrão
+                release_date = ""
             )
         }
     }
 
+    suspend fun saveUserPreferredGenres(genres: List<Genre>) {
+        val uid = Firebase.auth.currentUser?.uid ?: return
+        val db = Firebase.firestore
 
+        val genreIds = genres.map { it.id }
+        db.collection("users").document(uid).set(mapOf("preferredGenres" to genreIds), SetOptions.merge()).await()
+    }
 
 
 }

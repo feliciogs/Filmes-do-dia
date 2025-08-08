@@ -29,8 +29,8 @@ fun MovieCard(
 ) {
     Card(
         modifier = modifier
-            .height(300.dp) // Altura total fixa
-            .width(180.dp)  // Largura fixa
+            .height(300.dp)
+            .width(180.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)

@@ -1,6 +1,8 @@
 package com.fenixgs.filmedodia.data.di
 
 import com.fenixgs.filmedodia.data.repository.MovieRepository
+import com.fenixgs.filmedodia.data.repository.UserPreferencesRepository
+import com.fenixgs.filmedodia.presentation.genreselection.GenreSelectionViewModel
 import com.fenixgs.filmedodia.presentation.home.HomeViewModel
 import com.fenixgs.filmedodia.presentation.login.LoginViewModel
 import com.fenixgs.filmedodia.presentation.profile.ProfileViewModel
@@ -17,8 +19,11 @@ val appModule = module {
 
     single { MovieRepository(get(), get()) }
 
+    single { UserPreferencesRepository(auth = get(), firestore = get()) }
+
     viewModel { HomeViewModel(get()) }
     viewModel { LoginViewModel() }
     viewModel { RegisterViewModel() }
     viewModel { ProfileViewModel(get()) }
+    viewModel { GenreSelectionViewModel(get()) }
 }
