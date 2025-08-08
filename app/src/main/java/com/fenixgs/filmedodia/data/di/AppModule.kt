@@ -24,6 +24,6 @@ val appModule = module {
     viewModel { HomeViewModel(get(),get()) }
     viewModel { LoginViewModel() }
     viewModel { RegisterViewModel() }
-    viewModel { ProfileViewModel(get()) }
+    viewModel { ProfileViewModel(get(), get()) }
     viewModel { GenreSelectionViewModel(get()) }
 }

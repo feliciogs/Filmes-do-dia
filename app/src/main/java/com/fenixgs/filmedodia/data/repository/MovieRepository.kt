@@ -2,14 +2,9 @@ package com.fenixgs.filmedodia.data.repository
 
 import com.fenixgs.filmedodia.data.api.RetrofitInstance
 import com.fenixgs.filmedodia.data.api.dto.MovieDTO
-import com.fenixgs.filmedodia.domain.model.Genre
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 
 class MovieRepository(
@@ -18,14 +13,6 @@ class MovieRepository(
 ) {
 
     private val userId: String? get() = auth.currentUser?.uid
-
-    suspend fun getDramaMovies(apiKey: String): List<MovieDTO> {
-        val response = RetrofitInstance.api.getMoviesByGenre(
-            apiKey = apiKey,
-            genreId = 18
-        )
-        return response.results
-    }
 
     suspend fun getMoviesByGenre(apiKey: String,genre:Int): List<MovieDTO> {
         val response = RetrofitInstance.api.getMoviesByGenre(
@@ -80,14 +67,6 @@ class MovieRepository(
                 release_date = ""
             )
         }
-    }
-
-    suspend fun saveUserPreferredGenres(genres: List<Genre>) {
-        val uid = Firebase.auth.currentUser?.uid ?: return
-        val db = Firebase.firestore
-
-        val genreIds = genres.map { it.id }
-        db.collection("users").document(uid).set(mapOf("preferredGenres" to genreIds), SetOptions.merge()).await()
     }
 
 

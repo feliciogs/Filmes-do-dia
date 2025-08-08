@@ -31,7 +31,7 @@ class HomeViewModel(
         loadPreferredGenres()
     }
 
-    private fun loadPreferredGenres() {
+    fun loadPreferredGenres() {
         viewModelScope.launch {
             val ids = userPreferencesRepository.getPreferredGenres()
             val allGenres = GenresProvider.genres

@@ -86,5 +86,13 @@ fun ProfileScreen(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = {
+            navController.navigate("editGenres")
+        }) {
+            Text("Editar gêneros preferidos")
+        }
     }
 }

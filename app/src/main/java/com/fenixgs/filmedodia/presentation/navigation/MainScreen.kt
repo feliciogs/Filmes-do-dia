@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fenixgs.filmedodia.presentation.home.HomeScreen
+import com.fenixgs.filmedodia.presentation.profile.EditGenresScreen
 import com.fenixgs.filmedodia.presentation.profile.ProfileScreen
 import com.fenixgs.filmedodia.presentation.profile.WatchedMoviesScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -70,6 +71,9 @@ fun MainScreen(rootNavController: NavHostController) {
                 }
                 composable("watchedMovies") {
                     WatchedMoviesScreen(navController)
+                }
+                composable("editGenres") {
+                    EditGenresScreen(navController)
                 }
             }
         }
