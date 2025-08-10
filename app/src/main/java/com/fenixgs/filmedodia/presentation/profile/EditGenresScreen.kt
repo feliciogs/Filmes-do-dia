@@ -97,7 +97,7 @@ fun EditGenresScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
-                    enabled = !isSaving,
+                    enabled = !isSaving && selectedSet.isNotEmpty(),
                     onClick = {
                         isSaving = true
                         viewModel.updatePreferredGenres(selectedSet.toList()) {
@@ -112,6 +112,7 @@ fun EditGenresScreen(
         }
     )
 }
+
 
 
 

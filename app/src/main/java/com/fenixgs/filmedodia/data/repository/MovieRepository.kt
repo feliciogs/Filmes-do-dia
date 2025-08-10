@@ -14,13 +14,72 @@ class MovieRepository(
 
     private val userId: String? get() = auth.currentUser?.uid
 
-    suspend fun getMoviesByGenre(apiKey: String,genre:Int): List<MovieDTO> {
+    suspend fun getMoviesByGenre(apiKey: String, genre: Int): List<MovieDTO> {
         val response = RetrofitInstance.api.getMoviesByGenre(
             apiKey = apiKey,
-            genreId = genre
+            genreId = genre.toString()
         )
-        return response.results
+
+        val commonWords = setOf(
+            "o", "a", "os", "as", "um", "uma", "de", "do", "da", "dos", "das", "em", "para",
+            "the", "a", "an", "of", "in", "on", "and"
+        )
+
+        val asianRegex = Regex("[\\p{InCJK_Unified_Ideographs}\\p{InHiragana}\\p{InKatakana}\\p{InHangul_Syllables}]")
+
+        return response.results.filter { movie ->
+            val title = movie.title?.trim()?.lowercase() ?: ""
+
+            if (asianRegex.containsMatchIn(title)) {
+                false
+            } else {
+                val isLatin = title.matches(Regex("^[\\p{L}\\p{M}\\p{Zs}\\p{P}0-9]+$"))
+
+                val words = title.split(" ")
+                val hasCommonWordOrLongWord = words.any { it in commonWords || it.length >= 3 }
+                val isSingleWord = words.size == 1
+
+                isLatin && (hasCommonWordOrLongWord || isSingleWord)
+            }
+        }
     }
+
+    suspend fun getMoviesByGenresAnd(apiKey: String, genreIds: List<Int>): List<MovieDTO> {
+        if (genreIds.isEmpty()) return emptyList()
+
+        val genreParam = genreIds.joinToString(separator = ",")
+        val response = RetrofitInstance.api.getMoviesByGenre(
+            apiKey = apiKey,
+            genreId = genreParam
+        )
+
+        val commonWords = setOf(
+            "o", "a", "os", "as", "um", "uma", "de", "do", "da", "dos", "das", "em", "para",
+            "the", "a", "an", "of", "in", "on", "and"
+        )
+
+        val asianRegex = Regex("[\\p{InCJK_Unified_Ideographs}\\p{InHiragana}\\p{InKatakana}\\p{InHangul_Syllables}]")
+
+        return response.results.filter { movie ->
+            val title = movie.title?.trim()?.lowercase() ?: ""
+
+            if (asianRegex.containsMatchIn(title)) {
+                false
+            } else {
+                val isLatin = title.matches(Regex("^[\\p{L}\\p{M}\\p{Zs}\\p{P}0-9]+$"))
+
+                val words = title.split(" ")
+                val hasCommonWordOrLongWord = words.any { it in commonWords || it.length >= 3 }
+                val isSingleWord = words.size == 1
+
+                isLatin && (hasCommonWordOrLongWord || isSingleWord)
+            }
+        }
+    }
+
+
+
+
 
     suspend fun getWatchedMovies(): List<String> {
         val uid = userId ?: return emptyList()

@@ -19,6 +19,9 @@ class HomeViewModel(
     private val _genreMoviesMap = MutableStateFlow<Map<Genre, List<MovieDTO>>>(emptyMap())
     val genreMoviesMap: StateFlow<Map<Genre, List<MovieDTO>>> = _genreMoviesMap
 
+    private val _multiGenreMovies = MutableStateFlow<List<MovieDTO>>(emptyList())
+    val multiGenreMovies: StateFlow<List<MovieDTO>> = _multiGenreMovies
+
     private val _preferredGenres = MutableStateFlow<List<Genre>>(emptyList())
     val preferredGenres: StateFlow<List<Genre>> = _preferredGenres
 
@@ -40,6 +43,7 @@ class HomeViewModel(
             selectedGenres.forEach { genre ->
                 loadUnwatchedMoviesByGenre(genre)
             }
+            refreshMultiGenreMovies(selectedGenres)
         }
     }
 
@@ -59,6 +63,7 @@ class HomeViewModel(
         viewModelScope.launch {
             repository.saveWatchedMovie(movie.title, movie.poster_path ?: "")
             loadUnwatchedMoviesByGenre(genre)
+            refreshMultiGenreMovies(preferredGenres.value)
         }
     }
 
@@ -76,9 +81,29 @@ class HomeViewModel(
             }
 
             _genreMoviesMap.value = map
+
+            refreshMultiGenreMovies(genres)
+
             _isLoading.value = false
         }
     }
 
+    private fun refreshMultiGenreMovies(genres: List<Genre>) {
+        if (genres.size < 2) {
+            _multiGenreMovies.value = emptyList()
+            return
+        }
+
+        viewModelScope.launch {
+            val watchedTitles = repository.getWatchedMovies()
+            val genreIds = genres.map { it.id }
+
+            val movies = repository.getMoviesByGenresAnd(apiKey, genreIds)
+            val unwatched = movies.filterNot { it.title in watchedTitles }.take(10) // pode ajustar quantidade
+
+            _multiGenreMovies.value = unwatched
+        }
+    }
 }
+
 

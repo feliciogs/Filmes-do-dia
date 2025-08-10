@@ -11,9 +11,9 @@ interface TMDBApi {
     @GET("discover/movie")
     suspend fun getMoviesByGenre(
         @Query("api_key") apiKey: String,
-        @Query("with_genres") genreId: Int,
+        @Query("with_genres") genreId: String,
         @Query("include_adult") includeAdult: Boolean = false,
-        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("sort_by") sortBy: String = "vote_count.desc",
         @Query("language") language: String = "pt-BR",
         @Query("page") page: Int = Random.nextInt(500)
     ): MovieResponse

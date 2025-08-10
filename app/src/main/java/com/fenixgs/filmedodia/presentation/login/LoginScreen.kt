@@ -20,10 +20,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fenixgs.filmedodia.R
 import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(navController: NavController) {
-    val viewModel = getViewModel<LoginViewModel>()
+    val viewModel : LoginViewModel  = koinViewModel()
     val loginState by viewModel.loginState.collectAsState()
 
     var email by remember { mutableStateOf("") }
